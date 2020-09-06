@@ -1,0 +1,10 @@
+{
+	"name": "react-express-monorepo",
+	"version": "1.0.0",
+	"main": "index.js",
+	"author": "Harvey Sison <harveyjaysison@gmail.com>",
+	"license": "MIT",
+	"devDependencies": {
+		"lerna": "^3.22.1"
+	}
+}
