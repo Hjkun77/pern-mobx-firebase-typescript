@@ -5,7 +5,7 @@
   "main": "build/index.js",
   "scripts": {
     "test": "jest",
-    "start": "nodemon --exec src/index",
+    "start": "nodemon src/index.ts",
     "build": "tsc",
     "lint": "yarn eslint 'src/**/*.{ts,js}' 'test/**/*.{ts,js}' --fix"
   },
@@ -21,6 +21,7 @@
   "devDependencies": {
     "@types/cors": "^2.8.7",
     "@types/express": "^4.17.8",
+    "@types/jest": "^26.0.13",
     "@types/node": "^14.6.4",
     "@typescript-eslint/eslint-plugin": "^4.0.1",
     "@typescript-eslint/parser": "^4.0.1",
