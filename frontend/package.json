@@ -51,5 +51,6 @@
 		"stylelint": "^13.7.0",
 		"stylelint-config-recommended": "^3.0.0",
 		"stylelint-config-sass-guidelines": "^7.1.0"
-	}
+	},
+	"proxy": "http://localhost:8000"
 }
