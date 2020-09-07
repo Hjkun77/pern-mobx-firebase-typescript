@@ -1,5 +1,5 @@
 {
-	"name": "react-express-monorepo",
+	"name": "pern-typescript-monorepo",
 	"private": true,
 	"version": "1.0.0",
 	"main": "index.js",
