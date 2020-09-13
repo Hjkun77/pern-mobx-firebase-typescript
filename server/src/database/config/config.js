@@ -9,8 +9,8 @@ module.exports = {
 
   development: {
     database: 'users',
-    username: `${process.env.DB_USER}`,
-    password: `${process.env.DB_PASS}`,
+    username: '',
+    password: '',
     host: '127.0.0.1',
     dialect: 'postgres',
   },

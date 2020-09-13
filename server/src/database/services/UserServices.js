@@ -1,4 +1,4 @@
-import database from '../models';
+const database = require('../models');
 
 class UserService {
   static async getAllUsers() {
@@ -35,4 +35,4 @@ class UserService {
   }
 }
 
-export default UserService;
+module.exports = UserService;
