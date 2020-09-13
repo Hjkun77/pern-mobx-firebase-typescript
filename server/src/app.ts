@@ -2,7 +2,7 @@ import express from 'express';
 import bodyParser from 'body-parser';
 import cors from 'cors';
 
-const User = require('.database/models/User');
+const User = require('./database/models/User');
 
 const app = express();
 
