@@ -24,6 +24,7 @@ module.exports = {
         functions: 'never'
       }
     ],
+    'arrow-parens': 'off',
     'import/extensions': [
       'error',
       'ignorePackages',
