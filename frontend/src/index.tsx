@@ -1,5 +1,5 @@
 import React, { Suspense } from 'react'
-// import { createStore, StoreProvider } from './stores'
+import { createStore, StoreProvider } from './stores'
 import ReactDOM from 'react-dom'
 import './index.scss'
 import App from './App'
@@ -8,14 +8,11 @@ import * as serviceWorker from './serviceWorker'
 
 ReactDOM.render(
 	<React.StrictMode>
-		{/* <StoreProvider store={createStore()}>
+		<StoreProvider store={createStore()}>
 			<Suspense fallback={<Loading />}>
 				<App />
 			</Suspense>
-		</StoreProvider> */}
-		<Suspense fallback={<Loading />}>
-			<App />
-		</Suspense>
+		</StoreProvider>
 	</React.StrictMode>,
 	document.getElementById('root')
 )
