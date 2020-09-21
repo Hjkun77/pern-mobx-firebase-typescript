@@ -1,33 +1,33 @@
-import React, { Component } from 'react'
+import * as React from 'react'
 import { Link } from 'react-router-dom'
 
 import { auth } from '../../firebase'
 import * as routes from '../../constants/routes'
+import { updateByPropertyName } from '../../utils'
 
-const PasswordForget = () => (
-	<div>
-		<h1>PasswordForget</h1>
-		<PasswordForgetForm />
-	</div>
-)
+interface State {
+	email: string
+	error: { message: string } | null
+}
 
-const updateByPropertyName = (propertyName, value) => () => ({
-	[propertyName]: value,
-})
-
-const INITIAL_STATE = {
+const INITIAL_STATE: State = {
 	email: '',
 	error: null,
 }
 
-class PasswordForgetForm extends Component {
-	constructor(props) {
-		super(props)
+const PasswordForgetLink: React.StatelessComponent = () => (
+	<p>
+		<Link to={routes.PASSWORD_FORGET}>Forgot Password?</Link>
+	</p>
+)
 
+class PasswordForgetForm extends React.Component<{}, State> {
+	constructor(props: {}) {
+		super(props)
 		this.state = { ...INITIAL_STATE }
 	}
 
-	onSubmit = event => {
+	onSubmit = (event: React.FormEvent<HTMLFormElement>) => {
 		const { email } = this.state
 
 		auth
@@ -67,10 +67,11 @@ class PasswordForgetForm extends Component {
 	}
 }
 
-const PasswordForgetLink = () => (
-	<p>
-		<Link to={routes.PASSWORD_FORGET}>Forgot Password?</Link>
-	</p>
+const PasswordForget = () => (
+	<div>
+		<h1>PasswordForget</h1>
+		<PasswordForgetForm />
+	</div>
 )
 
 export default PasswordForget

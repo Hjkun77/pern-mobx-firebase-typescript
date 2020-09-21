@@ -1,21 +1,19 @@
-import React, { Component } from 'react'
+import * as React from 'react'
 import { Link, withRouter } from 'react-router-dom'
 
 import { auth, db } from '../../firebase'
 import * as routes from '../../constants/routes'
+import { updateByPropertyName } from '../../utils'
 
-const SignUp = ({ history }) => (
-	<div>
-		<h1>SignUp</h1>
-		<SignUpForm history={history} />
-	</div>
-)
+interface State {
+	username: string
+	email: string
+	passwordOne: string
+	passwordTwo: string
+	error: { message: string } | null
+}
 
-const updateByPropertyName = (propertyName, value) => () => ({
-	[propertyName]: value,
-})
-
-const INITIAL_STATE = {
+const INITIAL_STATE: State = {
 	username: '',
 	email: '',
 	passwordOne: '',
@@ -23,14 +21,13 @@ const INITIAL_STATE = {
 	error: null,
 }
 
-class SignUpForm extends Component {
-	constructor(props) {
+class SignUpForm extends React.Component<any, State> {
+	constructor(props: any) {
 		super(props)
-
 		this.state = { ...INITIAL_STATE }
 	}
 
-	onSubmit = event => {
+	onSubmit = (event: React.FormEvent<HTMLFormElement>) => {
 		const { username, email, passwordOne } = this.state
 
 		const { history } = this.props
@@ -39,7 +36,7 @@ class SignUpForm extends Component {
 			.doCreateUserWithEmailAndPassword(email, passwordOne)
 			.then(authUser => {
 				// Create a user in your own accessible Firebase Database too
-				db.doCreateUser(authUser.user.uid, username, email)
+				db.doCreateUser(authUser?.user?.uid!, username, email)
 					.then(() => {
 						this.setState(() => ({ ...INITIAL_STATE }))
 						history.push(routes.HOME)
@@ -112,12 +109,19 @@ class SignUpForm extends Component {
 	}
 }
 
+const SignUpPage: React.StatelessComponent<{}> = ({ history }: any) => (
+	<div>
+		<h1>SignUp</h1>
+		<SignUpForm history={history} />
+	</div>
+)
+
 const SignUpLink = () => (
 	<p>
 		Don't have an account? <Link to={routes.SIGN_UP}>Sign Up</Link>
 	</p>
 )
 
-export default withRouter(SignUp)
+export default withRouter(SignUpPage)
 
 export { SignUpForm, SignUpLink }
