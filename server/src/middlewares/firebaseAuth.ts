@@ -3,8 +3,7 @@ import admin from '../config/firebase';
 
 const authMiddleware = (
   request: express.Request,
-  response: express.Response,
-  next: express.NextFunction
+  response: express.Response
 // eslint-disable-next-line consistent-return
 ) => {
   const headerToken = request.headers.authorization;
@@ -20,7 +19,11 @@ const authMiddleware = (
   admin
     .auth()
     .verifyIdToken(token)
-    .then(() => next())
+    .then(decodedIdToken => admin.auth().getUser(decodedIdToken.uid)).then(user => {
+      // Do whatever you want with the user.
+      // eslint-disable-next-line no-console
+      console.log(user);
+    })
     .catch(() => response.send({ message: 'Could not authorize' }).status(403));
 };
 
