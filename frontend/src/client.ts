@@ -1,19 +1,22 @@
 /* eslint-disable no-unused-vars */
 /* eslint-disable no-undef */
 import axios, { AxiosRequestConfig } from 'axios'
+import { auth } from './config/firebase'
 
 function get<T>(path: string, optCfg: AxiosRequestConfig = {}): Promise<T> {
 	return axios.get<T>(path, optCfg).then(response => response.data)
 }
 
-const uid_ni_current_user = 'uid'
+var accessToken: string | null = null
+
+auth.currentUser?.getIdToken().then(token => (accessToken = token))
 
 function post<T>(
 	path: string,
 	data: any,
 	optCfg: AxiosRequestConfig = {
 		headers: {
-			Authorization: `Bearer ${uid_ni_current_user}`,
+			Authorization: `Bearer ${accessToken}`,
 		},
 	}
 ): Promise<T> {
