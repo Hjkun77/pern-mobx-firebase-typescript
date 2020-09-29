@@ -1,7 +1,6 @@
 import React, { Suspense } from 'react'
 import { createStore, StoreProvider } from './stores'
 import ReactDOM from 'react-dom'
-import './index.scss'
 import App from './App'
 import Loading from './components/Loading'
 import * as serviceWorker from './serviceWorker'

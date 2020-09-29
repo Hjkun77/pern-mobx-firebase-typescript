@@ -1,4 +1,4 @@
-import { db } from '../config/firebase'
+import { db } from '../../config/firebase'
 
 export const doCreateUser = (id: string, username: string, email: string) =>
 	db.ref(`users/${id}`).set({

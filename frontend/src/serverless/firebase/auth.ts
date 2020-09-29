@@ -1,4 +1,4 @@
-import { auth, googleAuthProvider } from '../config/firebase'
+import { auth, googleAuthProvider } from '../../config/firebase'
 
 export const doCreateUserWithEmailAndPassword = (
 	email: string,
