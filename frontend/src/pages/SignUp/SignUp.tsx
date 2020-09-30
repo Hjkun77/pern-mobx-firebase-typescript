@@ -2,24 +2,12 @@ import React from 'react'
 import DefaultLayout from '../../layouts/DefaultLayout'
 import { Formik, Form } from 'formik'
 import * as yup from 'yup'
+import { auth, db } from '../../serverless/firebase'
 
 const FILE_SIZE = 160 * 1024
 const SUPPORTED_FORMATS = ['image/jpg', 'image/jpeg', 'image/png']
 
 const signupSchema = yup.object().shape({
-	image: yup
-		.mixed()
-		.required('A file is required')
-		.test(
-			'fileSize',
-			'File too large',
-			value => value && value.size <= FILE_SIZE
-		)
-		.test(
-			'fileFormat',
-			'Unsupported Format',
-			value => value && SUPPORTED_FORMATS.includes(value.type)
-		),
 	name: yup.string().trim().required('name is requred'),
 	email: yup.string().trim().required('email is requred'),
 	password: yup.string().trim().required('password is requred'),
@@ -42,12 +30,23 @@ const SignUp = () => (
 		<Formik
 			initialValues={initialValues}
 			validationSchema={signupSchema}
-			onSubmit={(values, { setSubmitting }) => {
-				setTimeout(() => {
-					alert(JSON.stringify(values, null, 2))
-					setSubmitting(false)
-				}, 400)
-			}}
+			onSubmit={values =>
+				auth
+					.doCreateUserWithEmailAndPassword(values.email, values.password)
+					.then(authUser => {
+						// Create a user in your own accessible Firebase Database too
+						db.doCreateUser(authUser?.user?.uid!, values.name, values.email)
+							.then(() => {
+								console.log('Sign Up successful')
+							})
+							.catch(error => {
+								console.log(error)
+							})
+					})
+					.catch(error => {
+						console.log(error)
+					})
+			}
 		>
 			{({
 				values,
@@ -58,6 +57,14 @@ const SignUp = () => (
 				isSubmitting,
 			}) => (
 				<Form>
+					<input
+						type='text'
+						name='name'
+						onChange={handleChange}
+						onBlur={handleBlur}
+						value={values.name}
+					/>
+					{errors.name && touched.name && errors.name}
 					<input
 						type='email'
 						name='email'
@@ -74,6 +81,16 @@ const SignUp = () => (
 						value={values.password}
 					/>
 					{errors.password && touched.password && errors.password}
+					<input
+						type='password'
+						name='passwordConfirm'
+						onChange={handleChange}
+						onBlur={handleBlur}
+						value={values.passwordConfirm}
+					/>
+					{errors.passwordConfirm &&
+						touched.passwordConfirm &&
+						errors.passwordConfirm}
 					<button type='submit' disabled={isSubmitting}>
 						Submit
 					</button>
