@@ -1,13 +1,25 @@
 import React from 'react'
-import { Link } from 'react-router-dom'
+import { useStores } from '../../stores'
 
-const Home = () => (
-	<div>
-		<h1>Home Page</h1>
-		<Link to='/login'>Login</Link>
-		<Link to='/signup'>Sign Up</Link>
-		<Link to='/forget-password'>Forget Password?</Link>
-	</div>
-)
+import { auth } from '../../serverless/firebase'
+
+const Home = () => {
+	const { userStore } = useStores()
+
+	const toggleLogout = () => {
+		userStore.logout()
+		return auth.doSignOut()
+	}
+
+	return (
+		<div>
+			<h1>Home Page</h1>
+			<h2>Account: {userStore.authUser && userStore.authUser.email}</h2>
+			<button type='button' onClick={toggleLogout}>
+				Sign Out
+			</button>
+		</div>
+	)
+}
 
 export default Home

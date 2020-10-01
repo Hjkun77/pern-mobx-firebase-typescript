@@ -3,13 +3,16 @@ import { createStore, StoreProvider } from './stores'
 import ReactDOM from 'react-dom'
 import App from './App'
 import Loading from './components/Loading'
+import InitialLoad from './components/InitialLoad'
 import * as serviceWorker from './serviceWorker'
 
 ReactDOM.render(
 	<React.StrictMode>
 		<StoreProvider store={createStore()}>
 			<Suspense fallback={<Loading />}>
-				<App />
+				<InitialLoad>
+					<App />
+				</InitialLoad>
 			</Suspense>
 		</StoreProvider>
 	</React.StrictMode>,

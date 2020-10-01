@@ -1,6 +1,8 @@
 import React, { lazy, Fragment } from 'react'
-import { Route, Switch, BrowserRouter } from 'react-router-dom'
+import { Route, Switch, BrowserRouter, Redirect } from 'react-router-dom'
 import { createGlobalStyle } from 'styled-components'
+import { useStores } from './stores'
+import { PrivateRoute, NoAuthRoute } from './routes'
 
 // Pages
 const Home = lazy(() => import('./pages/Home'))
@@ -10,20 +12,24 @@ const ForgetPassword = lazy(() => import('./pages/ForgetPassword/'))
 
 const routes = [
 	{
-		path: '/',
-		component: Home,
+		path: '/home',
+		component: <Home />,
+		privateRoute: true,
 	},
 	{
 		path: '/login',
-		component: Login,
+		component: <Login />,
+		privateRoute: false,
 	},
 	{
 		path: '/signup',
-		component: SignUp,
+		component: <SignUp />,
+		privateRoute: false,
 	},
 	{
 		path: '/forget-password',
-		component: ForgetPassword,
+		component: <ForgetPassword />,
+		privateRoute: false,
 	},
 ]
 
@@ -53,15 +59,33 @@ const App = () => {
 		
 	`
 
-	const renderRoutes = routes.map(({ path, component }, key) => (
-		<Route exact path={path} component={component} key={key} />
-	))
+	const renderRoutes = routes.map(({ path, component, privateRoute }, key) => {
+		return privateRoute ? (
+			<PrivateRoute exact path={path} render={() => component} key={key} />
+		) : (
+			<NoAuthRoute exact path={path} render={() => component} key={key} />
+		)
+	})
+
+	const { userStore } = useStores()
 
 	return (
 		<Fragment>
 			<GlobalStyle />
 			<BrowserRouter>
-				<Switch>{renderRoutes}</Switch>
+				<Switch>
+					<Route
+						exact
+						path='/'
+						render={() => (
+							<Redirect
+								from='/'
+								to={userStore.isAuthenticated ? '/home' : '/login'}
+							/>
+						)}
+					/>
+					{renderRoutes}
+				</Switch>
 			</BrowserRouter>
 		</Fragment>
 	)

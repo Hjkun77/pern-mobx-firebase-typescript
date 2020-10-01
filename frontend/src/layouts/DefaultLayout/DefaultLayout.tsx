@@ -1,10 +1,10 @@
-import React, { Fragment } from 'react'
+import React from 'react'
 
 interface DefaultLayoutProps {
 	children: React.ReactNode
 }
 const DefaultLayout = ({ children }: DefaultLayoutProps) => (
-	<Fragment>{children}</Fragment>
+	<div>{children}</div>
 )
 
 export default DefaultLayout
