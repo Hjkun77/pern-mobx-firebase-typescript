@@ -1,5 +1,5 @@
-require('dotenv').config();
+import { PORT } from './constants';
 
-const PORT = process.env.PORT || 8000;
+const port = PORT || 8000;
 
-export default PORT;
+export default port;

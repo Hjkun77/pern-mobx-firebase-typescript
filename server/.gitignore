@@ -2,3 +2,7 @@
 /build
 serviceAccount.json
 .env
+.env.development
+.env.testing
+.env.staging
+.env.production

@@ -1,7 +1,7 @@
 /* eslint-disable no-unused-vars */
 /* eslint-disable no-undef */
 import axios, { AxiosRequestConfig } from 'axios'
-import { auth } from './config/firebase'
+import { auth } from '../config/firebase'
 
 function get<T>(path: string, optCfg: AxiosRequestConfig = {}): Promise<T> {
 	return axios.get<T>(path, optCfg).then(response => response.data)

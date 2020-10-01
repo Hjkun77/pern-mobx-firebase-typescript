@@ -1,127 +1,103 @@
-import * as React from 'react'
-import { Link, withRouter } from 'react-router-dom'
+import React from 'react'
+import DefaultLayout from '../../layouts/DefaultLayout'
+import { Formik, Form } from 'formik'
+import * as yup from 'yup'
+import { auth, db } from '../../serverless/firebase'
 
-import { auth, db } from '../../firebase'
-import * as routes from '../../constants/routes'
-import { updateByPropertyName } from '../../utils'
+const FILE_SIZE = 160 * 1024
+const SUPPORTED_FORMATS = ['image/jpg', 'image/jpeg', 'image/png']
 
-interface State {
-	username: string
-	email: string
-	passwordOne: string
-	passwordTwo: string
-	error: { message: string } | null
-}
+const signupSchema = yup.object().shape({
+	name: yup.string().trim().required('name is requred'),
+	email: yup.string().trim().required('email is requred'),
+	password: yup.string().trim().required('password is requred'),
+	passwordConfirm: yup
+		.string()
+		.trim()
+		.oneOf([yup.ref('password')], 'Passwords must match')
+		.required('password confirmation is requred'),
+})
 
-const INITIAL_STATE: State = {
-	username: '',
+const initialValues = {
+	name: '',
 	email: '',
-	passwordOne: '',
-	passwordTwo: '',
-	error: null,
+	password: '',
+	passwordConfirm: '',
 }
 
-class SignUpForm extends React.Component<any, State> {
-	constructor(props: any) {
-		super(props)
-		this.state = { ...INITIAL_STATE }
-	}
-
-	onSubmit = (event: React.FormEvent<HTMLFormElement>) => {
-		const { username, email, passwordOne } = this.state
-
-		const { history } = this.props
-
-		auth
-			.doCreateUserWithEmailAndPassword(email, passwordOne)
-			.then(authUser => {
-				// Create a user in your own accessible Firebase Database too
-				db.doCreateUser(authUser?.user?.uid!, username, email)
-					.then(() => {
-						this.setState(() => ({ ...INITIAL_STATE }))
-						history.push(routes.HOME)
+const SignUp = () => (
+	<DefaultLayout>
+		<Formik
+			initialValues={initialValues}
+			validationSchema={signupSchema}
+			onSubmit={values =>
+				auth
+					.doCreateUserWithEmailAndPassword(values.email, values.password)
+					.then(authUser => {
+						// Create a user in your own accessible Firebase Database too
+						db.doCreateUser(authUser?.user?.uid!, values.name, values.email)
+							.then(() => {
+								console.log('Sign Up successful')
+							})
+							.catch(error => {
+								console.log(error)
+							})
 					})
 					.catch(error => {
-						this.setState(updateByPropertyName('error', error))
+						console.log(error)
 					})
-			})
-			.catch(error => {
-				this.setState(updateByPropertyName('error', error))
-			})
-
-		event.preventDefault()
-	}
-
-	render() {
-		const { username, email, passwordOne, passwordTwo, error } = this.state
-
-		const isInvalid =
-			passwordOne !== passwordTwo ||
-			passwordOne === '' ||
-			username === '' ||
-			email === ''
-
-		return (
-			<form onSubmit={this.onSubmit}>
-				<input
-					value={username}
-					onChange={event =>
-						this.setState(updateByPropertyName('username', event.target.value))
-					}
-					type='text'
-					placeholder='Full Name'
-				/>
-				<input
-					value={email}
-					onChange={event =>
-						this.setState(updateByPropertyName('email', event.target.value))
-					}
-					type='text'
-					placeholder='Email Address'
-				/>
-				<input
-					value={passwordOne}
-					onChange={event =>
-						this.setState(
-							updateByPropertyName('passwordOne', event.target.value)
-						)
-					}
-					type='password'
-					placeholder='Password'
-				/>
-				<input
-					value={passwordTwo}
-					onChange={event =>
-						this.setState(
-							updateByPropertyName('passwordTwo', event.target.value)
-						)
-					}
-					type='password'
-					placeholder='Confirm Password'
-				/>
-				<button disabled={isInvalid} type='submit'>
-					Sign Up
-				</button>
-
-				{error && <p>{error.message}</p>}
-			</form>
-		)
-	}
-}
-
-const SignUpPage: React.StatelessComponent<{}> = ({ history }: any) => (
-	<div>
-		<h1>SignUp</h1>
-		<SignUpForm history={history} />
-	</div>
+			}
+		>
+			{({
+				values,
+				errors,
+				touched,
+				handleChange,
+				handleBlur,
+				isSubmitting,
+			}) => (
+				<Form>
+					<input
+						type='text'
+						name='name'
+						onChange={handleChange}
+						onBlur={handleBlur}
+						value={values.name}
+					/>
+					{errors.name && touched.name && errors.name}
+					<input
+						type='email'
+						name='email'
+						onChange={handleChange}
+						onBlur={handleBlur}
+						value={values.email}
+					/>
+					{errors.email && touched.email && errors.email}
+					<input
+						type='password'
+						name='password'
+						onChange={handleChange}
+						onBlur={handleBlur}
+						value={values.password}
+					/>
+					{errors.password && touched.password && errors.password}
+					<input
+						type='password'
+						name='passwordConfirm'
+						onChange={handleChange}
+						onBlur={handleBlur}
+						value={values.passwordConfirm}
+					/>
+					{errors.passwordConfirm &&
+						touched.passwordConfirm &&
+						errors.passwordConfirm}
+					<button type='submit' disabled={isSubmitting}>
+						Submit
+					</button>
+				</Form>
+			)}
+		</Formik>
+	</DefaultLayout>
 )
 
-const SignUpLink = () => (
-	<p>
-		Don't have an account? <Link to={routes.SIGN_UP}>Sign Up</Link>
-	</p>
-)
-
-export default withRouter(SignUpPage)
-
-export { SignUpForm, SignUpLink }
+export default SignUp

@@ -1,76 +1,21 @@
-import * as React from 'react'
-import { Link, withRouter } from 'react-router-dom'
-import styled from 'styled-components'
+import React from 'react'
+import DefaultLayout from '../../layouts/DefaultLayout'
+import { Formik, Form } from 'formik'
+import * as yup from 'yup'
+import { auth, db } from '../../serverless/firebase'
 
-import * as routes from '../../constants/routes'
-import { auth, db } from '../../firebase'
-import { PasswordForgetLink } from '../PasswordForget/PasswordForget'
-import { SignUpLink } from '../SignUp/SignUp'
+const loginSchema = yup.object().shape({
+	email: yup.string().trim().required('email is requred'),
+	password: yup.string().trim().required('password is requred'),
+})
 
-interface IState {
-	username: string
-	email: string
-	password: string
-	error: { message: string } | null
-}
-
-const INIT_STATE = {
+const initialValues = {
 	email: '',
-	error: null,
 	password: '',
-	username: '',
 }
 
-const SignInPageContent = styled.div`
-	min-height: calc(100vh - 56px);
-`
-
-const SignInWithGoogle = styled.button`
-	background-color: #ea4335;
-	border-color: #ea4335;
-	transition: filter 0.15s ease-in-out;
-	&:hover {
-		background-color: #ea4335;
-		border-color: #ea4335;
-		filter: brightness(90%);
-	}
-`
-
-const SignInLink = () => (
-	<p className='lead'>
-		Already have an account? <Link to={routes.SIGN_IN}>Sign in</Link>
-	</p>
-)
-
-class SignInForm extends React.Component<any, IState> {
-	constructor(props: any) {
-		super(props)
-		this.state = { ...INIT_STATE }
-
-		this.onEmailInputChange = this.onEmailInputChange.bind(this)
-		this.onPasswordInputChange = this.onPasswordInputChange.bind(this)
-	}
-
-	public onSubmit = (event: React.FormEvent<HTMLFormElement>) => {
-		const { email, password } = this.state
-		const { history } = this.props
-
-		auth
-			.doSignInWithEmailAndPassword(email, password)
-			.then(() => {
-				this.setState(() => ({ ...INIT_STATE }))
-				history.push(routes.LANDING)
-			})
-			.catch(error => {
-				this.setState({ error })
-			})
-
-		event.preventDefault()
-	}
-
-	public onGoogleSignIn = () => {
-		const { history } = this.props
-
+const Login = () => {
+	const onGoogleSignIn = () =>
 		auth.doSignInWithGoogle().then(authUser =>
 			db.checkIfUserExist(authUser?.user?.uid!).then(() =>
 				db
@@ -80,81 +25,60 @@ class SignInForm extends React.Component<any, IState> {
 						authUser?.user?.email!
 					)
 					.then(() => {
-						this.setState(() => ({ ...INIT_STATE }))
-						history.push(routes.LANDING)
+						console.log('Sign In with Google success')
 					})
 			)
 		)
-	}
-
-	public onEmailInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-		this.setState({ email: event.target.value })
-	}
-
-	public onPasswordInputChange = (
-		event: React.ChangeEvent<HTMLInputElement>
-	) => {
-		this.setState({ password: event.target.value })
-	}
-
-	public render() {
-		const { email, password, error } = this.state
-		const isInvalid = password === '' || email === ''
-
-		return (
-			<div className='my-3'>
-				<form onSubmit={this.onSubmit}>
-					<div className='form-group'>
+	return (
+		<DefaultLayout>
+			<Formik
+				initialValues={initialValues}
+				validationSchema={loginSchema}
+				onSubmit={values =>
+					auth
+						.doSignInWithEmailAndPassword(values.email, values.password)
+						.then(() => {
+							console.log('Login Success')
+						})
+						.catch(error => {
+							console.log(error)
+						})
+				}
+			>
+				{({
+					values,
+					errors,
+					touched,
+					handleChange,
+					handleBlur,
+					isSubmitting,
+				}) => (
+					<Form>
 						<input
-							value={this.state.email}
-							onChange={this.onEmailInputChange}
-							className='form-control form-control-lg'
-							type='text'
-							placeholder='Email'
+							type='email'
+							name='email'
+							onChange={handleChange}
+							onBlur={handleBlur}
+							value={values.email}
 						/>
-					</div>
-					<div className='form-group'>
+						{errors.email && touched.email && errors.email}
 						<input
-							value={this.state.password}
-							onChange={this.onPasswordInputChange}
-							className='form-control form-control-lg'
 							type='password'
-							placeholder='Password'
+							name='password'
+							onChange={handleChange}
+							onBlur={handleBlur}
+							value={values.password}
 						/>
-					</div>
-					<button
-						className='btn btn-primary btn-lg btn-block'
-						disabled={isInvalid}
-						type='submit'
-					>
-						Sign in
-					</button>
-
-					{error && <p>{error.message}</p>}
-				</form>
-				<p className='mt-3'>OR</p>
-				<SignInWithGoogle
-					className='btn btn-primary btn-lg btn-block'
-					onClick={this.onGoogleSignIn}
-				>
-					Sign in with Google
-				</SignInWithGoogle>
-			</div>
-		)
-	}
+						{errors.password && touched.password && errors.password}
+						<button type='submit' disabled={isSubmitting}>
+							Submit
+						</button>
+					</Form>
+				)}
+			</Formik>
+			<button onClick={onGoogleSignIn}>Sign in With Google</button>
+		</DefaultLayout>
+	)
 }
 
-const Login = ({ history }: any) => (
-	<SignInPageContent className='row align-items-center justify-content-center py-3'>
-		<main className='col-12 col-md-6 col-lg-4 text-center' role='main'>
-			<h1>Sign in</h1>
-			<SignUpLink />
-			<SignInForm history={history} />
-			<PasswordForgetLink />
-		</main>
-	</SignInPageContent>
-)
-
-export default withRouter(Login)
-
-export { SignInForm, SignInLink }
+export default Login
