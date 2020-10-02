@@ -1,7 +1,6 @@
 import React, { Fragment, useEffect } from 'react'
 import { useStores } from '../../stores'
 import * as firebase from '../../config/firebase'
-
 /**
  * Load application initial credential before rendering app
  */

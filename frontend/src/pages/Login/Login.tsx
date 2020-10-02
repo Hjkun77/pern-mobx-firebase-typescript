@@ -2,7 +2,7 @@ import React from 'react'
 import DefaultLayout from '../../layouts/DefaultLayout'
 import { Formik, Form } from 'formik'
 import * as yup from 'yup'
-import { auth, db } from '../../serverless/firebase'
+import { auth } from '../../serverless/firebase'
 
 const loginSchema = yup.object().shape({
 	email: yup.string().trim().required('email is requred'),
@@ -16,19 +16,16 @@ const initialValues = {
 
 const Login = () => {
 	const onGoogleSignIn = () =>
-		auth.doSignInWithGoogle().then(authUser =>
-			db.checkIfUserExist(authUser?.user?.uid!).then(() =>
-				db
-					.doCreateUser(
-						authUser?.user?.uid!,
-						authUser?.user?.displayName!,
-						authUser?.user?.email!
-					)
-					.then(() => {
-						console.log('Sign In with Google success')
-					})
+		auth
+			.doSignInWithGoogle()
+			.then(authUser =>
+				console.log(
+					authUser?.user?.uid!,
+					authUser?.user?.displayName!,
+					authUser?.user?.email!
+				)
 			)
-		)
+
 	return (
 		<DefaultLayout>
 			<Formik

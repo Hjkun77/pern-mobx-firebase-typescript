@@ -2,10 +2,10 @@ import React from 'react'
 import DefaultLayout from '../../layouts/DefaultLayout'
 import { Formik, Form } from 'formik'
 import * as yup from 'yup'
-import { auth, db } from '../../serverless/firebase'
+import { auth } from '../../serverless/firebase'
 
-const FILE_SIZE = 160 * 1024
-const SUPPORTED_FORMATS = ['image/jpg', 'image/jpeg', 'image/png']
+// const FILE_SIZE = 160 * 1024
+// const SUPPORTED_FORMATS = ['image/jpg', 'image/jpeg', 'image/png']
 
 const signupSchema = yup.object().shape({
 	name: yup.string().trim().required('name is requred'),
@@ -33,16 +33,15 @@ const SignUp = () => (
 			onSubmit={values =>
 				auth
 					.doCreateUserWithEmailAndPassword(values.email, values.password)
-					.then(authUser => {
-						// Create a user in your own accessible Firebase Database too
-						db.doCreateUser(authUser?.user?.uid!, values.name, values.email)
-							.then(() => {
-								console.log('Sign Up successful')
-							})
-							.catch(error => {
-								console.log(error)
-							})
-					})
+					.then(authUser =>
+						console.log(
+							'Sign Up Successful with the following creds:',
+							authUser?.user?.uid!,
+							values.email,
+							values.password,
+							values.name
+						)
+					)
 					.catch(error => {
 						console.log(error)
 					})

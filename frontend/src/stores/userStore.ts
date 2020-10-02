@@ -9,6 +9,9 @@ class UserStore {
 	public authUser: User | null = null
 	@observable.ref public isAuthenticated: boolean = false
 
+	@observable
+	public users = {}
+
 	constructor(rootStore: RootStore) {
 		this.rootStore = rootStore
 	}
