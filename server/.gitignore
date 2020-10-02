@@ -28,6 +28,7 @@ package-lock.json
 .env.test
 .env.staging
 .env.production
+.env.development
 
 #editor
 .vscode

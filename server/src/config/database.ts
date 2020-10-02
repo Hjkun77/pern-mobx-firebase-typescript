@@ -1,7 +1,5 @@
-/* eslint-disable no-use-before-define */
-/* eslint-disable no-restricted-globals */
-/* eslint-disable no-param-reassign */
 import deepFreeze from 'simple-deep-freeze';
+import {_isStr} from '../helpers/database'
 
 import { 
   PG_PLATFORM_USER_NAME,
@@ -10,28 +8,9 @@ import {
   PG_PLATFORM_HOST,
   PG_PLATFORM_PORT,
   CORS_ORIGINS,
-  NODE_ENV
+  PORT,
+  env, ENV
 } from './constants';
-
-import * as PORT from './port';
-
-export type ENV = 'development'|'testing'|'staging'|'production';
-
-const configPaths = {
-    development: '.env.development',
-    testing: '.env.test',
-    staging: '.env.staging',
-    production: '.env.production',
-};
-
-const env = NODE_ENV as ENV;
-export const configPath = configPaths[env] || '.env';
-
-// eslint-disable-next-line no-console
-console.log(
-    `Initializing configuration: NODE_ENV: '${env}'; config path: <root>/'${configPath}'`,
-    '\n',
-);
 
 export interface ICORSCfg {
   readonly origin: string[],
@@ -140,12 +119,3 @@ const mergeConfig = Object.keys(defaultEnv).reduce(
 const allconfig = deepFreeze(mergeConfig as IConfig);
 
 export default allconfig;
-
-function _isStr(val: any): string {
-  if (val && typeof val === 'string') {
-      return val;
-  }
-
-  throw new Error(`Invalid config variable`);
-}
-

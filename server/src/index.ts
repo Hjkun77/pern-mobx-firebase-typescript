@@ -1,7 +1,7 @@
 import app from './app';
-import port from './config/port';
+import {PORT} from './config/constants';
 
-app.listen(port, () => {
+app.listen(PORT, () => {
   // eslint-disable-next-line no-console
-  console.log(`⚡️[server]: Server is running at http://localhost:${port}`);
+  console.log(`⚡️[server]: Server is running at http://localhost:${PORT}`);
 });
