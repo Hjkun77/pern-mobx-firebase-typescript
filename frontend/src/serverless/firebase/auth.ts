@@ -1,4 +1,4 @@
-import { auth, googleAuthProvider } from '../config/firebase'
+import { auth, googleAuthProvider } from '../../config/firebase'
 
 export const doCreateUserWithEmailAndPassword = (
 	email: string,
@@ -10,7 +10,15 @@ export const doSignInWithEmailAndPassword = (email: string, password: string) =>
 
 export const doSignInWithGoogle = () => auth.signInWithPopup(googleAuthProvider)
 
-export const doSignOut = () => auth.signOut()
+export const doSignOut = () =>
+	auth.signOut().then(
+		function () {
+			console.log('Signed Out')
+		},
+		function (error) {
+			console.error('Sign Out Error', error)
+		}
+	)
 
 export const doPasswordReset = (email: string) =>
 	auth.sendPasswordResetEmail(email)

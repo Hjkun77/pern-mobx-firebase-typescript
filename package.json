@@ -6,7 +6,7 @@
 	"author": "Harvey Sison <harveyjaysison@gmail.com>",
 	"license": "MIT",
 	"scripts": {
-		"start": "concurrently \"cd frontend && yarn start\" \"cd server && yarn start\""
+		"dev": "concurrently \"cd frontend && yarn start\" \"cd server && yarn dev\""
 	},
 	"devDependencies": {
 		"lerna": "^3.22.1",
